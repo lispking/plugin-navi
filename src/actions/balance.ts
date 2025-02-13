@@ -12,7 +12,7 @@ import {
     type Action,
 } from "@elizaos/core";
 import { z } from "zod";
-import { walletProvider } from "../providers/wallet";
+import { WalletProvider, walletProvider } from "../providers/wallet";
 
 export interface BalanceContent extends Content {
     address: string;
@@ -59,7 +59,7 @@ export default {
     ): Promise<boolean> => {
         elizaLogger.log("Starting Balance handler...");
 
-        const walletInfo = await walletProvider.get(runtime, message, state);
+        const walletInfo = (await walletProvider.get(runtime, message, state)) as WalletProvider;
         state.walletInfo = walletInfo;
 
         // Initialize or update state
@@ -105,10 +105,10 @@ export default {
         }
 
         try {
-            const balances = walletInfo.getAllBalances();
+            const balances = await walletInfo.getBalances();
             let balance: string;
             if (BalanceContent.token) {
-                balance = walletInfo.formatBalanceWithKey(BalanceContent.token, balances.get(BalanceContent.token) ?? 0);
+                balance = walletInfo.formatBalanceWithKey(BalanceContent.token, balances[BalanceContent.token] ?? 0);
             } else {
                 balance = walletInfo.formatBalance(balances);
             }

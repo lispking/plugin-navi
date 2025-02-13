@@ -12,7 +12,7 @@ import {
     type Action,
 } from "@elizaos/core";
 import { z } from "zod";
-import { walletProvider } from "../providers/wallet";
+import { WalletProvider, walletProvider } from "../providers/wallet";
 
 export interface SupplyContent extends Content {
     token: string;
@@ -61,7 +61,7 @@ export default {
     ): Promise<boolean> => {
         elizaLogger.log("Starting Supply handler...");
 
-        const walletInfo = await walletProvider.get(runtime, message, state);
+        const walletInfo = (await walletProvider.get(runtime, message, state)) as WalletProvider;
         state.walletInfo = walletInfo;
 
         // Initialize or update state
